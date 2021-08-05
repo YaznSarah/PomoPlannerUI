@@ -1,0 +1,47 @@
+<template>
+  <div class="col-4">
+    <div
+      class="card"
+      style="width: 18rem"
+      v-for="task in filteredTasks"
+      :key="task.id"
+    >
+      <div class="card-body">
+        <h5 class="card-title">{{ task.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ task.status }}</h6>
+        <p class="card-text">
+          Some quick example text to build on the card title and make up the
+          bulk of the card's content.
+        </p>
+        <a href="#" class="card-link" @click="deleteTask(task)">Delete</a>
+        <a href="#" class="card-link">Another link</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data: function () {
+    return {
+    };
+  },
+  computed: {
+    filteredTasks(){
+      return this.$store.getters.getTasksByStatus(this.status)
+    }
+  },
+  name: "CardList",
+  props: {
+    status: String,
+  },
+  methods: {
+    async deleteTask(task) {
+      this.$store.dispatch('deleteTask', task)
+    },
+  },
+};
+</script>
+
+<style>
+</style>
