@@ -5,26 +5,6 @@
       </div>
     </div>
     <div class="row" v-if="!loading">
-      <div class="col-4">
-        <div class="input-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Task title"
-            aria-describedby="basic-addon2"
-            v-model="newTaskTitle"
-          />
-          <div class="input-group-append">
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              @click="createTask()"
-            >
-              Button
-            </button>
-          </div>
-        </div>
-      </div>
       <div class="row">
         <card-list status="to-do"></card-list>
         <card-list status="in-progress"></card-list>
@@ -44,7 +24,6 @@ export default {
   data() {
     return {
       tasks: [],
-      newTaskTitle: "",
       loading: true
     };
   },
@@ -56,12 +35,12 @@ export default {
       await this.$store.dispatch('getTasks')
       this.loading = false;
     },
-    async createTask() {
-      this.$store.dispatch('addTask', this.newTaskTitle)
-    },
   },
 };
 </script>
 
 <style>
+body{
+  background: lightblue;
+}
 </style>

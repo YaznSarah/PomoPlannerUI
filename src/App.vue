@@ -1,5 +1,5 @@
 <template>
-  <div class="teamname">Wolfpack</div>
+  <p class="h1">WolfPack</p>
   <div class="project1">
     PomoPlanner
     <div class="projectdescription">Talk about our project here</div>

@@ -1,15 +1,17 @@
 <template>
-  <div class="col-3 offset-1 bg-light drop-zone" id = "column"
-    @drop="this.onDrop($event, this.status)"
+  <div
+    class="col-3 offset-1 drop-zone"
+    id="column"
+    @drop="onDrop($event, status)"
     @dragover.prevent
-    >
-    {{ status }}
+  >
+    <div class="header">{{ status }}</div>
     <div
       class="card drag-el"
       v-for="task in filteredTasks"
       :key="task.id"
       draggable="true"
-      @dragstart="this.startDrag($event, task)"
+      @dragstart="startDrag($event, task)"
     >
       <div class="card-body">
         <h5 class="card-title">{{ task.title }}</h5>
@@ -22,13 +24,33 @@
         <a href="#" class="card-link">Another link</a>
       </div>
     </div>
+    <div class="input-group mb-3" v-if="status == 'to-do'">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Task title"
+            aria-describedby="basic-addon2"
+            v-model="newTaskTitle"
+          />
+          <div class="input-group-append">
+            <button
+              class="btn btn-warning"
+              type="button"
+              @click="createTask()"
+            >
+              Add Task
+            </button>
+          </div>
+        </div>
   </div>
 </template>
 
 <script>
 export default {
   data: function () {
-    return {};
+    return {
+      newTaskTitle: "",
+    };
   },
   mounted() {},
   computed: {
@@ -44,28 +66,43 @@ export default {
     async deleteTask(task) {
       this.$store.dispatch("deleteTask", task);
     },
+
+    async createTask() {
+      this.$store.dispatch("addTask", this.newTaskTitle);
+    },
     startDrag(event, task) {
       event.dataTransfer.dropEffect = "move";
       event.dataTransfer.effectAllowed = "move";
       event.dataTransfer.setData("taskId", task.id);
     },
-    
+
     onDrop(event, status) {
-      const taskId = event.dataTransfer.getData('taskId')
+      const taskId = event.dataTransfer.getData("taskId");
       let task = this.$store.getters.getTaskById(taskId);
       task.status = status;
-      this.$store.dispatch("updateTask", task)
-    }
+      this.$store.dispatch("updateTask", task);
+    },
   },
 };
 </script>
 
-<style>
+<style scoped>
 .card:hover {
-  background-color: #f8f9fa;
+  background-color: lightskyblue;
+}
+
+.card{
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin: 5px;
 }
 
 .drag-el {
-  background: bisque;
+  background: lightcyan;
+}
+
+.drop-zone {
+  background: lightblue;
+  padding: 15px;
+  border-radius: 15px;
 }
 </style>
