@@ -51,17 +51,6 @@ export default {
   mounted() {
     this.getTasks()
   },
-  // computed: {
-  //   inProgressTasks(){
-  //     return this.tasks.filter((item) => item.status == 'in-progress')
-  //   },
-  //   completedTasks(){
-  //     return this.tasks.filter((item) => item.status == 'complete')
-  //   },
-  //   toDoTasks(){
-  //     return this.tasks.filter((item) => item.status == 'to-do')
-  //   }
-  // },
   methods: {
     async getTasks() {
       await this.$store.dispatch('getTasks')

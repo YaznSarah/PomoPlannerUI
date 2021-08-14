@@ -9,6 +9,7 @@ const store = createStore({
             loggedIn: false
         }
     },
+    // only mutations can affect the state
     mutations: {
         addTask(state, task) {
             state.tasks.push(task)
@@ -29,14 +30,20 @@ const store = createStore({
             state.tasks = tasks;
         }
     },
+    // getters allow you to create utility functions for access state, but are not required
     getters: {
         getTasksByStatus: (state) => (status) => {
-            console.log(state.tasks)
             return state.tasks.filter((item) => {
                 return item.status == status
             })
+        },
+        getTaskById: (state) => (id) => {
+            return state.tasks.filter((item) => {
+                return item.id == id
+            })[0]
         }
     },
+    // actions exist to allow you to trigger mutations asynchronously in one place
     actions: {
         async getTasks({ commit }) {
             const response = await fetch("http://localhost:3000/tasks", {
@@ -69,9 +76,19 @@ const store = createStore({
             commit('addTask', task)
         },
         async updateTask({ commit }, task) {
-            console.log(task)
+            await fetch("http://localhost:3000/tasks/" + task.id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: task.title,
+                    status: task.status,
+                    description: task.description
+                }),
+            });
             commit('updateTask', task)
-        },
+        }
     }
 })
 

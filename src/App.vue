@@ -1,17 +1,21 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <Dashboard/>
+  <div class="teamname">Wolfpack</div>
+  <div class="project1">
+    PomoPlanner
+    <div class="projectdescription">Talk about our project here</div>
+  </div>
+  <Dashboard />
 </template>
 
 <script>
-import Dashboard from './components/Dashboard.vue'
+import Dashboard from "./components/Dashboard.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     Dashboard,
-  }
-}
+  },
+};
 </script>
 
 <style>

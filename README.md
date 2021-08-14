@@ -26,9 +26,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 
 ### TODO
-- Add a new computed property for toDoTasks and completeTasks
-- Instead of having the same foreach... in each column... make a component called CardList that takes in one PROPERTY (lookup vue property) called taskList and pass in the computed property
-- Lookup drag and drop functionality 
-- Add support for assignee and description
-- Use a real database, can start with SQLite
-- Swap out the tasks const with references to the database`
+- Finish PUT /task api, IE UPDATE
+- add a header to each column indicating the status
+- add a background color to the columns
+- Lookup html5 drag and drop
+- On drop of an item into a column, call update tasks to set the new status
