@@ -5,6 +5,8 @@ const store = createStore({
     plugins: debug ? [createLogger()] : [],
     state() {
         return {
+            boards: [],
+            board: {},
             tasks: [],
             loggedIn: false
         }
@@ -13,6 +15,9 @@ const store = createStore({
     mutations: {
         addTask(state, task) {
             state.tasks.push(task)
+        },
+        addBoard(state, board){
+            state.boards.push(board);
         },
         removeTask(state, task) {
             state.tasks = state.tasks.filter((item) => {
@@ -28,6 +33,12 @@ const store = createStore({
         },
         setTasks(state, tasks) {
             state.tasks = tasks;
+        },
+        setBoards(state, boards) {
+            state.boards = boards;
+        }, 
+        setCurrentBoard(state, board){
+            state.board = board
         }
     },
     // getters allow you to create utility functions for access state, but are not required
@@ -45,6 +56,29 @@ const store = createStore({
     },
     // actions exist to allow you to trigger mutations asynchronously in one place
     actions: {
+        async getBoards({ commit }) {
+            const response = await fetch("http://localhost:3000/boards", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const boards = await response.json();
+            commit('setBoards', boards)
+        },
+        async addBoard({ commit }, boardTitle) {
+            const response = await fetch("http://localhost:3000/boards", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: boardTitle,
+                }),
+            });
+            const board = await response.json();
+            commit('addBoard', board)
+        },
         async getTasks({ commit }) {
             const response = await fetch("http://localhost:3000/tasks", {
                 method: "GET",
@@ -55,20 +89,33 @@ const store = createStore({
             const tasks = await response.json();
             commit('setTasks', tasks)
         },
+        async getBoard({ commit }, id) {
+            console.log('here')
+            const response = await fetch("http://localhost:3000/boards/" + id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const data = await response.json();
+            commit('setTasks', data.tasks)
+            commit('setCurrentBoard', data.board)
+        },
         async deleteTask({ commit }, task) {
             await fetch("http://localhost:3000/tasks/" + task.id, {
                 method: "DELETE",
             });
             commit('removeTask', task)
         },
-        async addTask({ commit }, taskTitle) {
+        async addTask({ commit }, taskInfo) {
             const response = await fetch("http://localhost:3000/tasks", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    title: taskTitle,
+                    boardId: taskInfo.boardId,
+                    title: taskInfo.title,
                     status: "to-do",
                 }),
             });
@@ -79,12 +126,13 @@ const store = createStore({
             await fetch("http://localhost:3000/tasks/" + task.id, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json", 
                 },
                 body: JSON.stringify({
                     title: task.title,
                     status: task.status,
-                    description: task.description
+                    description: task.description,
+                    points: task.points
                 }),
             });
             commit('updateTask', task)

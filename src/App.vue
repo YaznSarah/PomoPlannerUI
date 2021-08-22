@@ -1,20 +1,22 @@
 <template>
-  <p class="h1">WolfPack</p>
-  <div class="project1">
-    PomoPlanner
-    <div class="projectdescription">Talk about our project here</div>
-  </div>
-  <Dashboard />
+  <p class="h1">Pomo Planner</p>
+  <Dashboard v-if="this.$route.query.id !== undefined" :id="this.$route.query.id" />
+  <BoardList v-if="this.$route.query.id == undefined"/>
 </template>
 
 <script>
 import Dashboard from "./components/Dashboard.vue";
+import BoardList from "./components/BoardList.vue";
 
 export default {
   name: "App",
   components: {
     Dashboard,
+    BoardList
   },
+  mounted(){
+    console.log(this.$route.query.id);
+  }
 };
 </script>
 

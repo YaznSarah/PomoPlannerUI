@@ -16,32 +16,29 @@
       <div class="card-body">
         <h5 class="card-title">{{ task.title }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{ task.status }}</h6>
-        <p class="card-text">
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
+        <p class="card-text mb-3">
+          <label class="form-label">Points</label>
+          <input type="number" v-model="task.points" min="1" max="13">
+          <textarea class="form-control" rows="3" v-model="task.description"></textarea>
         </p>
+        <a href="#" class="card-link" @click="updateTask(task)">Save</a>
         <a href="#" class="card-link" @click="deleteTask(task)">Delete</a>
-        <a href="#" class="card-link">Another link</a>
       </div>
     </div>
     <div class="input-group mb-3" v-if="status == 'to-do'">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Task title"
-            aria-describedby="basic-addon2"
-            v-model="newTaskTitle"
-          />
-          <div class="input-group-append">
-            <button
-              class="btn btn-warning"
-              type="button"
-              @click="createTask()"
-            >
-              Add Task
-            </button>
-          </div>
-        </div>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Task title"
+        aria-describedby="basic-addon2"
+        v-model="newTaskTitle"
+      />
+      <div class="input-group-append">
+        <button class="btn btn-warning" type="button" @click="createTask()" :disabled="newTaskTitle.trim().length == 0"> 
+          Add Task
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -65,10 +62,11 @@ export default {
   methods: {
     async deleteTask(task) {
       this.$store.dispatch("deleteTask", task);
+      await this.$store.dispatch("getTasks");
     },
 
     async createTask() {
-      this.$store.dispatch("addTask", this.newTaskTitle);
+      this.$store.dispatch("addTask", {title: this.newTaskTitle, boardId: this.$store.state.board.id});
     },
     startDrag(event, task) {
       event.dataTransfer.dropEffect = "move";
@@ -78,10 +76,15 @@ export default {
 
     onDrop(event, status) {
       const taskId = event.dataTransfer.getData("taskId");
+      console.log(taskId);
       let task = this.$store.getters.getTaskById(taskId);
       task.status = status;
       this.$store.dispatch("updateTask", task);
     },
+    updateTask(task) {
+      console.log(task)
+      this.$store.dispatch("updateTask", task);
+    }
   },
 };
 </script>
@@ -91,7 +94,7 @@ export default {
   background-color: lightskyblue;
 }
 
-.card{
+.card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin: 5px;
 }
