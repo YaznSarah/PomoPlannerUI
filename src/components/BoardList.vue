@@ -47,9 +47,6 @@ export default {
     async createBoard() {
       this.$store.dispatch("addBoard", this.newBoardTitle);
     },
-    async deleteBoard(){
-      this.$store.dispatch("deleteBoard", board)
-    }
   },
 };
 </script>
