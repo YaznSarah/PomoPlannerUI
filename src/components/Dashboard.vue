@@ -1,6 +1,8 @@
 <template>
   <div class="container">
+    <timer/>
     <div class="h2">{{ this.$store.state.board.title }}</div>
+    <br>
     <div class="align-middle" style="height:100%">
       <div class="spinner-border align-middle" role="status" v-if="loading">
       </div>
@@ -18,6 +20,7 @@
 
 <script>
 import CardList from './CardList.vue'
+import Timer from './Timer.vue'
 export default {
   name: "Dashboard",
   props: {
@@ -25,6 +28,7 @@ export default {
   },
   components: {
     'card-list': CardList,
+    'timer': Timer
   },
   data() {
     return {
@@ -43,9 +47,3 @@ export default {
   },
 };
 </script>
-
-<style>
-body{
-  background: lightblue;
-}
-</style>

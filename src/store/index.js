@@ -19,6 +19,11 @@ const store = createStore({
         addBoard(state, board){
             state.boards.push(board);
         },
+        removeBoard(state, board){
+            state.boards = state.boards.filter((item) => {
+                return board.id !== item.id
+            })
+        },
         removeTask(state, task) {
             state.tasks = state.tasks.filter((item) => {
                 return task.id !== item.id
@@ -79,15 +84,11 @@ const store = createStore({
             const board = await response.json();
             commit('addBoard', board)
         },
-        async getTasks({ commit }) {
-            const response = await fetch("http://localhost:3000/tasks", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
+        async deleteBoard({ commit }, board){
+            await fetch("http://localhost:3000/boards/" + board.id, {
+                method: "DELETE",
             });
-            const tasks = await response.json();
-            commit('setTasks', tasks)
+            commit('removeBoard', board)
         },
         async getBoard({ commit }, id) {
             console.log('here')

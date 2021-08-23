@@ -1,5 +1,5 @@
 <template>
-  <p class="h1">Pomo Planner</p>
+  <!-- <Sidebar/> -->
   <Dashboard v-if="this.$route.query.id !== undefined" :id="this.$route.query.id" />
   <BoardList v-if="this.$route.query.id == undefined"/>
 </template>
@@ -7,12 +7,13 @@
 <script>
 import Dashboard from "./components/Dashboard.vue";
 import BoardList from "./components/BoardList.vue";
-
+// import Sidebar from "./components/Sidebar.vue";
 export default {
   name: "App",
   components: {
     Dashboard,
-    BoardList
+    BoardList,
+    // Sidebar
   },
   mounted(){
     console.log(this.$route.query.id);
@@ -25,8 +26,17 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
+  background:#e6eefb;
   margin-top: 60px;
+}
+
+html{
+  background: #e6eefb;
+}
+
+.sidebar{
+  width: 200px;
+  background: #ffff;
 }
 </style>
