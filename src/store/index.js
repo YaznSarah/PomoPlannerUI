@@ -62,7 +62,7 @@ const store = createStore({
     // actions exist to allow you to trigger mutations asynchronously in one place
     actions: {
         async getBoards({ commit }) {
-            const response = await fetch("http://localhost:3000/boards", {
+            const response = await fetch("/boards", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
