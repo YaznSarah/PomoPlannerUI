@@ -15,9 +15,6 @@ export default {
     BoardList,
     // Sidebar
   },
-  created(){
-    document.title = 'PomoPlanner'
-  },
   mounted(){
     console.log(this.$route.query.id);
   }
