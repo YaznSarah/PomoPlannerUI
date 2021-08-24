@@ -72,7 +72,7 @@ const store = createStore({
             commit('setBoards', boards)
         },
         async addBoard({ commit }, boardTitle) {
-            const response = await fetch("http://localhost:3000/boards", {
+            const response = await fetch("/boards", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -85,14 +85,14 @@ const store = createStore({
             commit('addBoard', board)
         },
         async deleteBoard({ commit }, board){
-            await fetch("http://localhost:3000/boards/" + board.id, {
+            await fetch("/boards/" + board.id, {
                 method: "DELETE",
             });
             commit('removeBoard', board)
         },
         async getBoard({ commit }, id) {
             console.log('here')
-            const response = await fetch("http://localhost:3000/boards/" + id, {
+            const response = await fetch("/boards/" + id, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -103,13 +103,13 @@ const store = createStore({
             commit('setCurrentBoard', data.board)
         },
         async deleteTask({ commit }, task) {
-            await fetch("http://localhost:3000/tasks/" + task.id, {
+            await fetch("/tasks/" + task.id, {
                 method: "DELETE",
             });
             commit('removeTask', task)
         },
         async addTask({ commit }, taskInfo) {
-            const response = await fetch("http://localhost:3000/tasks", {
+            const response = await fetch("/tasks", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -124,7 +124,7 @@ const store = createStore({
             commit('addTask', task)
         },
         async updateTask({ commit }, task) {
-            await fetch("http://localhost:3000/tasks/" + task.id, {
+            await fetch("/tasks/" + task.id, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json", 
