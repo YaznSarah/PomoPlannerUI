@@ -1,23 +1,36 @@
 <template>
   <!-- <Sidebar/> -->
-  <Dashboard v-if="this.$route.query.id !== undefined" :id="this.$route.query.id" />
-  <BoardList v-if="this.$route.query.id == undefined"/>
+  <router-view/> 
+  <!-- <BoardList v-if="this.$store.getters.isAuthenticated == true"/>-->
 </template>
 
 <script>
-import Dashboard from "./components/Dashboard.vue";
-import BoardList from "./components/BoardList.vue";
+
 // import Sidebar from "./components/Sidebar.vue";
 export default {
   name: "App",
+  computed : {
+      isLoggedIn : function(){ return this.$store.getters.isLoggedIn}
+    },
+    methods: {
+      async logout (){
+        await this.$store.dispatch('LogOut')
+        this.$router.push('/login')
+      }
+    },
   components: {
-    Dashboard,
-    BoardList,
     // Sidebar
   },
   mounted(){
     console.log(this.$route.query.id);
+    if(!this.isLoggedIn){
+      this.$router.push('/login')
+    }
+    else{
+      this.$router.push("/")
+    }
   }
+  
 };
 </script>
 

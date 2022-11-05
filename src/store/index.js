@@ -8,7 +8,9 @@ const store = createStore({
             boards: [],
             board: {},
             tasks: [],
-            loggedIn: false
+            loggedIn: false,
+            users: [],
+            user: {},
         }
     },
     // only mutations can affect the state
@@ -42,8 +44,20 @@ const store = createStore({
         setBoards(state, boards) {
             state.boards = boards;
         }, 
+        setUsers(state, users) {
+            state.users = users;
+        }, 
         setCurrentBoard(state, board){
             state.board = board
+        },
+        addUser(state, user){
+            state.loggedIn = true
+            state.user = user
+            state.users.push(user)
+        },
+        setUser(state, user){
+            state.loggedIn = true
+            state.user = user
         }
     },
     // getters allow you to create utility functions for access state, but are not required
@@ -57,12 +71,14 @@ const store = createStore({
             return state.tasks.filter((item) => {
                 return item.id == id
             })[0]
-        }
+        },
+        getUsers: (state) => {return state.users},
+        isAuthenticated: (state) => {return state.loggedIn},
     },
     // actions exist to allow you to trigger mutations asynchronously in one place
     actions: {
         async getBoards({ commit }) {
-            const response = await fetch("/boards", {
+            const response = await fetch("http://localhost:3000/boards", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -70,6 +86,36 @@ const store = createStore({
             });
             const boards = await response.json();
             commit('setBoards', boards)
+        },
+        async getUsers({ commit }) {
+            const response = await fetch("http://localhost:3000/user", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const users = await response.json();
+            commit('setUsers', users)
+        },
+        async addUser({ commit }, userInfo) {
+            const response = await fetch("http://localhost:3000/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: userInfo.username,
+                    password: userInfo.password,
+                    firstName: userInfo.firstName,
+                    lastName: userInfo.lastName,
+                    email: userInfo.email,
+                }),
+            });
+            const user = await response.json();
+            // if(!user.error.length > 0){
+            //     commit('addUser', user)
+            // }
+            commit('addUser', user)
         },
         async addBoard({ commit }, boardTitle) {
             const response = await fetch("/boards", {
