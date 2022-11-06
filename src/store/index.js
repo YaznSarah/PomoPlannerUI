@@ -1,6 +1,6 @@
 import { createStore, createLogger } from 'vuex'
 const debug = process.env.NODE_ENV !== 'production'
-
+const hostname = debug ? 'http://localhost:3000' : '';
 const store = createStore({
     plugins: debug ? [createLogger()] : [],
     state() {
@@ -9,8 +9,8 @@ const store = createStore({
             board: {},
             tasks: [],
             loggedIn: false,
-            users: [],
             user: {},
+            errors: []
         }
     },
     // only mutations can affect the state
@@ -43,21 +43,27 @@ const store = createStore({
         },
         setBoards(state, boards) {
             state.boards = boards;
-        }, 
-        setUsers(state, users) {
-            state.users = users;
-        }, 
+        },
         setCurrentBoard(state, board){
             state.board = board
         },
         addUser(state, user){
             state.loggedIn = true
             state.user = user
-            state.users.push(user)
         },
         setUser(state, user){
             state.loggedIn = true
             state.user = user
+        },
+        addError(state, error){
+            state.errors.push(error);
+        },
+        clearErrors(state){
+            state.errors = [];
+        },
+        logout(state){
+            state.loggedIn = false;
+            state.user = {};
         }
     },
     // getters allow you to create utility functions for access state, but are not required
@@ -72,13 +78,12 @@ const store = createStore({
                 return item.id == id
             })[0]
         },
-        getUsers: (state) => {return state.users},
         isAuthenticated: (state) => {return state.loggedIn},
     },
     // actions exist to allow you to trigger mutations asynchronously in one place
     actions: {
         async getBoards({ commit }) {
-            const response = await fetch("http://localhost:3000/boards", {
+            const response = await fetch(hostname + "/boards", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -87,18 +92,9 @@ const store = createStore({
             const boards = await response.json();
             commit('setBoards', boards)
         },
-        async getUsers({ commit }) {
-            const response = await fetch("http://localhost:3000/user", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
-            const users = await response.json();
-            commit('setUsers', users)
-        },
         async addUser({ commit }, userInfo) {
-            const response = await fetch("http://localhost:3000/register", {
+            commit('clearErrors');
+            const response = await fetch(hostname + "/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -111,14 +107,39 @@ const store = createStore({
                     email: userInfo.email,
                 }),
             });
+            if(response.status === 401){
+                commit('addError', 'Email or Username already exists');
+            }
+            else if(response.status === 400){
+                commit('addError', 'Invalid input given');
+            }
+            else if(response.status === 200) {
+                const user = await response.json();
+                commit('addUser', user)
+            }
+        },
+        async checkUser({ commit }, userInfo){
+            commit('clearErrors');
+            const response = await fetch(hostname + "/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: userInfo.email,
+                    password: userInfo.password
+                }),
+            });
             const user = await response.json();
-            // if(!user.error.length > 0){
-            //     commit('addUser', user)
-            // }
-            commit('addUser', user)
+            if(user.length > 0){
+                commit('setUser', user[0])
+            }
+            else{
+                commit('addError', "Invalid credentials")
+            }
         },
         async addBoard({ commit }, boardTitle) {
-            const response = await fetch("/boards", {
+            const response = await fetch(hostname + "/boards", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -131,14 +152,14 @@ const store = createStore({
             commit('addBoard', board)
         },
         async deleteBoard({ commit }, board){
-            await fetch("/boards/" + board.id, {
+            await fetch(hostname + "/boards/" + board.id, {
                 method: "DELETE",
             });
             commit('removeBoard', board)
         },
         async getBoard({ commit }, id) {
             console.log('here')
-            const response = await fetch("/boards/" + id, {
+            const response = await fetch(hostname + "/boards/" + id, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -149,13 +170,13 @@ const store = createStore({
             commit('setCurrentBoard', data.board)
         },
         async deleteTask({ commit }, task) {
-            await fetch("/tasks/" + task.id, {
+            await fetch(hostname + "/tasks/" + task.id, {
                 method: "DELETE",
             });
             commit('removeTask', task)
         },
         async addTask({ commit }, taskInfo) {
-            const response = await fetch("/tasks", {
+            const response = await fetch(hostname + "/tasks", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -170,10 +191,10 @@ const store = createStore({
             commit('addTask', task)
         },
         async updateTask({ commit }, task) {
-            await fetch("/tasks/" + task.id, {
+            await fetch(hostname + "/tasks/" + task.id, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json", 
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     title: task.title,
@@ -183,6 +204,10 @@ const store = createStore({
                 }),
             });
             commit('updateTask', task)
+        },
+        async initialize( {commit} ){
+            commit("logout");
+            await fetch(hostname + "/initialize");
         }
     }
 })

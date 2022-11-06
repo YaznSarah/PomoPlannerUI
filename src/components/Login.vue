@@ -7,30 +7,21 @@
             alt="Sample image">
         </div>
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-          <form>
+          <div class="alert alert-danger" v-for="(error, index) in this.$store.state.errors" :key="index">{{ error }}</div>
+
+          <form @submit.prevent="login">
             <!-- Email input -->
             <div class="form-outline mb-4">
               <input type="email" id="form3Example3" class="form-control form-control-lg"
-                placeholder="Enter a valid username" v-model="form.username" />
-              <label class="form-label" for="form3Example3">Username</label>
+                placeholder="Enter a valid username" v-model="form.email" required />
+              <label class="form-label" for="form3Example3">Email</label>
             </div>
 
             <!-- Password input -->
             <div class="form-outline mb-3">
               <input type="password" id="form3Example4" class="form-control form-control-lg"
-                placeholder="Enter password" v-model="form.password" />
+                placeholder="Enter password" v-model="form.password" required/>
               <label class="form-label" for="form3Example4">Password</label>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center">
-              <!-- Checkbox -->
-              <div class="form-check mb-0">
-                <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-                <label class="form-check-label" for="form2Example3">
-                  Remember me
-                </label>
-              </div>
-              <a href="#!" class="text-body">Forgot password?</a>
             </div>
 
             <div class="text-center text-lg-start mt-4 pt-2">
@@ -41,6 +32,8 @@
               </div>
           </form>
         </div>
+        <br/>
+        <button class="btn btn-lg btn-danger" @click="initialize">Initialize DB</button>
       </div>
     </div>
   </section>
@@ -51,23 +44,25 @@ export default {
   data: function () {
     return {
       form: {
-        username: "",
+        email: "",
         password: "",
       }
     };
   },
   methods: {
-    async login(){
-      if(this.$store.getters.users.indexOf(this.form.username)){
+    async login() {
+      await this.$store.dispatch("checkUser", this.form);
+      if(this.$store.getters.isAuthenticated){
+        this.$router.push('/');
       }
+    },
+    async initialize(){
+      await this.$store.dispatch("initialize");
     }
   },
   mounted(){
-    this.$store.dispatch("getUsers")
-    if(this.$store.getters.isAuthenticated){
-        this.$router.push("/")
-      }
+    this.$store.commit("clearErrors");
   }
-  
+
 };
 </script>

@@ -9,34 +9,25 @@ import store from './store';
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-  { path: '/', component: BoardList },
-  { path: '/register', component: Register },
-  { path: '/login', component: Login, },
+  { path: '/', component: BoardList, meta: {
+    guest: false
+    }},
+  { path: '/register', component: Register, meta: {
+    guest: true
+    } },
+  { path: '/login', component: Login, meta: {
+    guest: true
+    } },
 ]
 const router = createRouter({
   history: createWebHistory(),
   routes,
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (store.getters.isAuthenticated) {
-      next();
-      return;
-    }
-    next("/login");
-  } else {
-    next();
-  }
-});
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.guest)) {
-    if (store.getters.isAuthenticated) {
-      next("/");
-      return;
-    }
-    next();
+  if (to.meta.guest === false && store.getters.isAuthenticated !== true) {
+    next("/login");
   } else {
     next();
   }

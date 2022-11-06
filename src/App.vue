@@ -1,36 +1,27 @@
 <template>
-  <!-- <Sidebar/> -->
-  <router-view/> 
-  <!-- <BoardList v-if="this.$store.getters.isAuthenticated == true"/>-->
+  <div class="container">
+    <nav class="navbar navbar-light bg-light p-4 border border-2 rounded-3">
+      <a class="navbar-brand" href="/">Pomo Planner</a>
+      <span class="navbar-text">
+        <button class="btn btn-primary" v-if="this.$store.getters.isAuthenticated" @click="logout">Logout</button>
+      </span>
+    </nav>
+    <div class="mt-5">
+      <router-view/>
+    </div>
+  </div>
 </template>
 
 <script>
 
-// import Sidebar from "./components/Sidebar.vue";
 export default {
   name: "App",
-  computed : {
-      isLoggedIn : function(){ return this.$store.getters.isLoggedIn}
-    },
-    methods: {
-      async logout (){
-        await this.$store.dispatch('LogOut')
-        this.$router.push('/login')
-      }
-    },
-  components: {
-    // Sidebar
-  },
-  mounted(){
-    console.log(this.$route.query.id);
-    if(!this.isLoggedIn){
+  methods: {
+    async logout() {
+      await this.$store.commit('logout')
       this.$router.push('/login')
     }
-    else{
-      this.$router.push("/")
-    }
-  }
-  
+  },
 };
 </script>
 
@@ -40,15 +31,15 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  background:#e6eefb;
+  background: #e6eefb;
   margin-top: 60px;
 }
 
-html{
+html {
   background: #e6eefb;
 }
 
-.sidebar{
+.sidebar {
   width: 200px;
   background: #ffff;
 }
