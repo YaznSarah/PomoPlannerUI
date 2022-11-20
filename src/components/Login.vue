@@ -13,7 +13,7 @@
             <!-- Email input -->
             <div class="form-outline mb-4">
               <input type="email" id="form3Example3" class="form-control form-control-lg"
-                placeholder="Enter a valid username" v-model="form.email" required />
+                placeholder="Enter a valid email" v-model="form.email" required />
               <label class="form-label" for="form3Example3">Email</label>
             </div>
 
@@ -33,7 +33,7 @@
           </form>
         </div>
         <br/>
-        <button class="btn btn-lg btn-danger" @click="initialize">Initialize DB</button>
+        <button class="btn btn-lg btn-danger" @click="initialize">Initialize Database</button>
       </div>
     </div>
   </section>
