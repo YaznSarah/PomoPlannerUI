@@ -35,7 +35,7 @@ const store = createStore({
             state.blog.blogTags.push(blogTag);
         },
         addComment(state, comment){
-            state.comments.push(comment);
+            state.blog.blogComments.push(comment);
         },
         removeBoard(state, board){
             state.boards = state.boards.filter((item) => {
@@ -74,6 +74,7 @@ const store = createStore({
         setCurrentBlog(state, blog){
             state.blog = blog;
             state.blog.blogTags = [];
+            state.blog.blogComments = [];
         },
         setComments(state, comments){
             state.comments = comments;
@@ -158,6 +159,16 @@ const store = createStore({
             });
             const blogs = await response.json();
             commit('setTags', blogs)
+        },
+        async getComments({ commit }) {
+            const response = await fetch(hostname + "/comments", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const comments = await response.json();
+            commit('setComments', comments)
         },
         async addUser({ commit }, userInfo) {
             commit('clearErrors');
@@ -298,7 +309,6 @@ const store = createStore({
             data.blog.blogTags = [];
             data.blog.blogComments = [];
             commit('setCurrentBlog', data.blog)
-            commit('setComments', data.blog.blogComments)
         },
         async deleteTask({ commit }, task) {
             await fetch(hostname + "/tasks/" + task.id, {

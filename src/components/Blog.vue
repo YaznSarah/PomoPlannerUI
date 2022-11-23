@@ -17,9 +17,10 @@
         <p class="fs-5 mb-4">{{ blog.description }}</p>
       </section>
     </article>
+    <label>Comments</label>
     <div class="comment">
       <div class="comment__flex">
-        <p v-for="comment in comments" :key="comment.comment">I found this article helpful</p>
+        <p v-for="comment in comments" :key="comment.comment">{{comment.description}} by <strong>{{comment.posted_by}}</strong></p>
       </div>
     </div>
     <div class="form">
@@ -59,7 +60,7 @@ export default {
   data() {
     return {
       newComment: {
-        sentiment: "Sentiment",
+        sentiment: "Choose sentiment",
         description: ""
       }
     };
@@ -69,7 +70,7 @@ export default {
       return this.$store.state.blog;
     },
     comments() {
-      return this.$store.state.comments
+      return this.$store.getters.getCommentsByBlogId(this.blog.blogid)
     },
     tags() {
       return this.$store.getters.getTagsByBlogId(this.blog.blogid)
@@ -82,6 +83,7 @@ export default {
   mounted() {
     this.getBlog();
     this.getTags();
+    this.getComments();
   },
 
   methods: {
@@ -92,10 +94,14 @@ export default {
     async getTags() {
       await this.$store.dispatch('getTags')
     },
+    async getComments() {
+      await this.$store.dispatch('getComments')
+    },
     async addComment() {
       await this.$store.dispatch('addComment', this.newComment)
+      this.getComments();
     },
-    async setNegative(){
+    setNegative(){
       this.newComment.sentiment = "Negative"
     },
     setPositive(){
@@ -109,7 +115,7 @@ export default {
 .comment {
   margin: 1em 0 2em;
   border-bottom: 1px solid #ccc;
-  color: red;
+  color: rgb(0, 116, 90);
 }
 
 .comment__flex-btn {
