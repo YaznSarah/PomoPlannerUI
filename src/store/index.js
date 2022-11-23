@@ -7,6 +7,13 @@ const store = createStore({
         return {
             boards: [],
             board: {},
+            blogs: [],
+            blog: {
+                blogTags: [],
+                blogComments: []
+            },
+            tags: [],
+            comments: [],
             tasks: [],
             loggedIn: false,
             user: {},
@@ -21,9 +28,23 @@ const store = createStore({
         addBoard(state, board){
             state.boards.push(board);
         },
+        addBlog(state, blog){
+            state.blogs.push(blog);
+        },
+        addTag(state, blogTag){
+            state.blog.blogTags.push(blogTag);
+        },
+        addComment(state, comment){
+            state.comments.push(comment);
+        },
         removeBoard(state, board){
             state.boards = state.boards.filter((item) => {
                 return board.id !== item.id
+            })
+        },
+        removeBlog(state, blog){
+            state.blogs = state.blogs.filter((item) => {
+                return blog.blogid !== item.blogid
             })
         },
         removeTask(state, task) {
@@ -44,8 +65,21 @@ const store = createStore({
         setBoards(state, boards) {
             state.boards = boards;
         },
+        setBlogs(state, blogs) {
+            state.blogs = blogs;
+        },
+        setTags(state, tags){
+            state.tags = tags;
+        },
+        setCurrentBlog(state, blog){
+            state.blog = blog;
+            state.blog.blogTags = [];
+        },
+        setComments(state, comments){
+            state.comments = comments;
+        },
         setCurrentBoard(state, board){
-            state.board = board
+            state.board = board;
         },
         addUser(state, user){
             state.loggedIn = true
@@ -60,6 +94,9 @@ const store = createStore({
         },
         clearErrors(state){
             state.errors = [];
+        },
+        clearBlogTags(state){
+            state.blog.blogTags = [];
         },
         logout(state){
             state.loggedIn = false;
@@ -78,6 +115,16 @@ const store = createStore({
                 return item.id == id
             })[0]
         },
+        getTagsByBlogId: (state) => (id) => {
+            return state.tags.filter((item) => {
+                return item.blogid == id
+            })
+        },
+        getCommentsByBlogId: (state) => (id) => {
+            return state.comments.filter((item) => {
+                return item.blogid == id
+            })
+        },
         isAuthenticated: (state) => {return state.loggedIn},
     },
     // actions exist to allow you to trigger mutations asynchronously in one place
@@ -91,6 +138,26 @@ const store = createStore({
             });
             const boards = await response.json();
             commit('setBoards', boards)
+        },
+        async getBlogs({ commit }) {
+            const response = await fetch(hostname + "/blogs", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const blogs = await response.json();
+            commit('setBlogs', blogs)
+        },
+        async getTags({ commit }) {
+            const response = await fetch(hostname + "/blogstags", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const blogs = await response.json();
+            commit('setTags', blogs)
         },
         async addUser({ commit }, userInfo) {
             commit('clearErrors');
@@ -151,11 +218,62 @@ const store = createStore({
             const board = await response.json();
             commit('addBoard', board)
         },
+        async addBlog({ commit }, blogInfo) {
+            const response = await fetch(hostname + "/blogs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    subject: blogInfo.subject,
+                    description: blogInfo.description,
+                    created_by: this.state.user.username
+                }),
+            });
+            const blog = await response.json();
+            commit('addBlog', blog)
+        },
+        async addTag({ commit }, tagInfo) {
+            const response = await fetch(hostname + "/blogstags", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    blogid: this.state.blogs.length + 1,
+                    tag: tagInfo
+                }),
+            });
+            const tag = await response.json();
+            commit(tag)
+        },
+        async addComment({ commit }, commentInfo) {
+            const response = await fetch(hostname + "/comments", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    sentiment: commentInfo.sentiment,
+                    description: commentInfo.description,
+                    posted_by: this.state.user.username,
+                    blogid : this.state.blog.blogid
+                }),
+            });
+            const comment = await response.json();
+            commit('addComment', comment)
+        },
         async deleteBoard({ commit }, board){
             await fetch(hostname + "/boards/" + board.id, {
                 method: "DELETE",
             });
             commit('removeBoard', board)
+        },
+        async deleteBlog({ commit }, blog){
+            await fetch(hostname + "/boards/" + blog.blogid, {
+                method: "DELETE",
+            });
+            commit('removeBlog', blog)
         },
         async getBoard({ commit }, id) {
             console.log('here')
@@ -168,6 +286,19 @@ const store = createStore({
             const data = await response.json();
             commit('setTasks', data.tasks)
             commit('setCurrentBoard', data.board)
+        },
+        async getBlog({ commit }, id) {
+            const response = await fetch(hostname + "/blogs/" + id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const data = await response.json();
+            data.blog.blogTags = [];
+            data.blog.blogComments = [];
+            commit('setCurrentBlog', data.blog)
+            commit('setComments', data.blog.blogComments)
         },
         async deleteTask({ commit }, task) {
             await fetch(hostname + "/tasks/" + task.id, {
