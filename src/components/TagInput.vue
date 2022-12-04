@@ -1,10 +1,10 @@
 <template>
     <div class='tag-input'>
-        <div class='tag-input__tag' v-for="tag in this.$store.state.blog.blogTags" :key="tag.blogid">
+        <div class='tag-input__tag' v-for="(tag, index) in this.$store.state.blog.blogTags" :key="index">
             <span @click='removeTag(index)'>x</span>
-            {{ tag }}
+            <strong>{{ tag }}</strong>
         </div>
-        <input type='text' @keydown.enter="addTag" placeholder="Enter a Tag" v-model="tag" class='tag-input__text' />
+        <input type='text' @keydown.enter="addTag" placeholder="Enter a Tag" v-model="this.tag" class='tag-input__text' />
     </div>
 </template>
 <script>

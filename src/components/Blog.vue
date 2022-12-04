@@ -20,13 +20,14 @@
     <label>Comments</label>
     <div class="comment">
       <div class="comment__flex">
-        <p v-for="comment in comments" :key="comment.comment">{{comment.description}} by <strong>{{comment.posted_by}}</strong></p>
+        <p v-for="comment in comments" :key="comment.comment"><strong><i>{{comment.sentiment}}</i></strong>:  {{comment.description}} by <strong>{{comment.posted_by}}</strong></p>
       </div>
     </div>
     <div class="form">
       <form @submit.prevent="addComment">
         <div class="form__group">
           <label>Leave a comment</label>
+          <div class="alert alert-danger" v-for="(error, index) in this.$store.state.errors" :key="index">{{ error }}</div>
           <textarea v-model="this.newComment.description" rows="1" required cols="10"
             placeholder="type in your comment"></textarea>
           <label for="Sentiment"></label>
@@ -84,6 +85,7 @@ export default {
     this.getBlog();
     this.getTags();
     this.getComments();
+    this.$store.commit("clearErrors");
   },
 
   methods: {
@@ -151,6 +153,10 @@ textarea {
   color: #230c0f;
   font-weight: 700;
   padding: 1em 2.5em;
-  margin-top: 1em;
+  margin-top: 20px;
+}
+
+.btn {
+  margin-top: 15px;
 }
 </style>

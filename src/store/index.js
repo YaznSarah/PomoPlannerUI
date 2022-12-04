@@ -157,8 +157,8 @@ const store = createStore({
                     "Content-Type": "application/json",
                 }
             });
-            const blogs = await response.json();
-            commit('setTags', blogs)
+            const tags = await response.json();
+            commit('setTags', tags)
         },
         async getComments({ commit }) {
             const response = await fetch(hostname + "/comments", {
@@ -236,13 +236,20 @@ const store = createStore({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    subject: blogInfo.subject,
-                    description: blogInfo.description,
-                    created_by: this.state.user.username
+                    subject: blogInfo.blog.subject,
+                    description: blogInfo.blog.description,
+                    created_by: this.state.user.username,
+                    tags: blogInfo.tags
                 }),
             });
-            const blog = await response.json();
-            commit('addBlog', blog)
+            if(response.status === 400){
+                commit('addError', 'Max blog post limit reached');
+            }
+            else{
+                const blog = await response.json();
+                console.log(blog)
+                commit('addBlog', blog)
+            }
         },
         async addTag({ commit }, tagInfo) {
             const response = await fetch(hostname + "/blogstags", {
@@ -257,7 +264,7 @@ const store = createStore({
             });
             const tag = await response.json();
             commit(tag)
-        },
+        },  
         async addComment({ commit }, commentInfo) {
             const response = await fetch(hostname + "/comments", {
                 method: "POST",
@@ -271,8 +278,15 @@ const store = createStore({
                     blogid : this.state.blog.blogid
                 }),
             });
+            if(response.status === 400){
+                let result = await response.json();
+                commit('addError', result.error);
+            }
+            else{
             const comment = await response.json();
             commit('addComment', comment)
+            }
+            
         },
         async deleteBoard({ commit }, board){
             await fetch(hostname + "/boards/" + board.id, {
@@ -306,8 +320,6 @@ const store = createStore({
                 }
             });
             const data = await response.json();
-            data.blog.blogTags = [];
-            data.blog.blogComments = [];
             commit('setCurrentBlog', data.blog)
         },
         async deleteTask({ commit }, task) {
