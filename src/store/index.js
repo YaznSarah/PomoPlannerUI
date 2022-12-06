@@ -12,6 +12,7 @@ const store = createStore({
                 blogTags: [],
                 blogComments: []
             },
+            questContainer: {},
             tags: [],
             comments: [],
             tasks: [],
@@ -75,6 +76,9 @@ const store = createStore({
             state.blog = blog;
             state.blog.blogTags = [];
             state.blog.blogComments = [];
+        },
+        setQuestContainer(state, result){
+            state.questContainer = result;
         },
         setComments(state, comments){
             state.comments = comments;
@@ -361,7 +365,74 @@ const store = createStore({
         async initialize( {commit} ){
             commit("logout");
             await fetch(hostname + "/initialize");
-        }
+        },
+        async computeQuestion1({ commit }, input) {
+            const response = await fetch(hostname + "/getblogs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: input.user
+                })
+            });
+            const result = await response.json();
+            commit("setQuestContainer", result)
+        },
+        async computeQuestion2({ commit }) {
+            const response = await fetch(hostname + "/usermostcomments", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const result = await response.json();
+            commit("setQuestContainer", result)
+        },
+        async computeQuestion3({ commit }, input) {
+            const response = await fetch(hostname + "/follows", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userX: input.userX,
+                    userY: input.userY,
+                })
+            });
+            const result = await response.json();
+            commit("setQuestContainer", result)
+        },
+        async computeQuestion4({ commit }) {
+            const response = await fetch(hostname + "/usernoblog", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const result = await response.json();
+            commit("setQuestContainer", result)
+        },
+        async computeQuestion5({ commit }) {
+            const response = await fetch(hostname + "/goodusers", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const result = await response.json();
+            commit("setQuestContainer", result)
+        },
+        async computeQuestion6({ commit }) {
+            const response = await fetch(hostname + "/hobbies", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const result = await response.json();
+            commit("setQuestContainer", result)
+        },
     }
 })
 
