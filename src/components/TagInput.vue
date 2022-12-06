@@ -68,7 +68,7 @@ export default {
 .tag-input__text {
     border: none;
     outline: none;
-    font-size: 0.9em;
+    font-size: 20px;
     line-height: 50px;
     background: none;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light navbar bg-light p-4 border border-2 rounded-3">
-      <a class="navbar-brand" href="/">Blog Bae</a>
+      <a class="navbar-brand" href="/">Blog Bay</a>
       <span class="navbar-text">
         <button class="btn btn-primary" v-if="this.$store.getters.isAuthenticated" @click="logout">Logout</button>
       </span>

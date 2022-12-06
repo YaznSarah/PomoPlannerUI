@@ -4,7 +4,7 @@
       No blogs have been posted, create one below
     </div>
     <div class="row">
-      <div class="col-5">
+      <div class="col-4">
         <div class="card text-center" v-for="blog in blogs" :key="blog.blogid">
           <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
             <a href="#!">
@@ -20,7 +20,7 @@
           </div>
         </div>
       </div>
-      <div class="col">
+      <div class="col-8">
         <h2>Create your own blog!</h2>
         <div class="alert alert-danger" v-for="(error, index) in this.$store.state.errors" :key="index">{{ error }}</div>
         <label>Subject</label>
@@ -34,25 +34,45 @@
         </div>
         <tag-input />
         <br />
-        <button class="btn btn-info" type="button" @click="createBlog()" :disabled="blog.subject.trim().length == 0">
+        <button class="btn btn-info" type="button" @click.stop="createBlog()"
+          :disabled="blog.subject.trim().length == 0">
           Create Blog
         </button>
         <br />
-        <div class = "buttonContainer">
-          <button type="button" @click="question1()" :disabled="this.input.user.trim().length == 0" class="btn btn-success">Question 1</button>
+        <div class="buttonContainer">
+          <button type="button" @click="question1()" :disabled="this.input.user.trim().length == 0"
+            class="btn btn-success">Good Blogs</button>
           <input type="text" class="form-control-sm" placeholder="Enter a user" v-model="this.input.user" />
-          <button type="button" @click="question2()" class="btn btn-success">Question 2</button>
+          <button type="button" @click="question2()" class="btn btn-success">Most Commenting User</button>
           <br />
-          <button type="button" @click="question3()" :disabled="(this.input.userX.trim().length == 0 || this.input.userY.trim().length == 0)" class="btn btn-success">Question 3</button>
+          <button type="button" @click="question3()"
+            :disabled="(this.input.userX.trim().length == 0 || this.input.userY.trim().length == 0)"
+            class="btn btn-success">FollowedByPair</button>
           <input type="text" class="form-control-sm" placeholder="Enter first user" v-model="this.input.userX" />
           <input type="text" class="form-control-sm" placeholder="Enter second user" v-model="this.input.userY" />
           <br />
-          <button type="button" @click="question4()" class="btn btn-success">Question 4</button>
-          <button type="button" @click="question5()" class="btn btn-success">Question 5</button>
-          <button type="button" @click="question6()" class="btn btn-success">Question 6</button>
+          <button type="button" @click="question4()" class="btn btn-success">User who never posts</button>
+          <button type="button" @click="question5()" class="btn btn-success">Good Users</button>
+          <button type="button" @click="question6()" class="btn btn-success">Shared Hobbies</button>
         </div>
-        <div class ="questionContainer">
-        <table><strong><tr v-for="item in container" :key="item.blogid">{{item}}</tr></strong></table>
+        <div class="questionContainer">
+          <div class="card" id = "containerCard">
+            <ul class="list-group list-group-flush">
+              <strong>
+                <li class="list-group-item" v-for="item in container" :key="item.blogid">
+                  {{ (item.username) }} <h3 v-if="item.subject"><strong>Subject: </strong>{{ item.subject }}</h3>
+                  <h4 v-if="item.description">
+                    <strong>Comment: </strong> {{ item.description }} by <strong>{{ item.posted_by }} *{{item.sentiment}}*</strong>
+                  </h4>
+                  <p v-if="(item.posted_by && !item.subject)">{{ item.posted_by }}</p>
+                  <h3 v-if="item.userA"> <strong>UserA: </strong> {{ item.userA }} <strong> UserB: </strong>{{ item.userB }}
+                    <strong>SharedHobby:</strong> {{ item.SharedHobby }}</h3>
+                  <h3 v-if="item.followers"><strong>LeaderName: </strong>{{ item.leadername }} <strong>Followers:</strong>
+                    {{ item.followers }}</h3>
+                </li>
+              </strong>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -81,7 +101,7 @@ export default {
     blogs() {
       return this.$store.state.blogs;
     },
-    container(){
+    container() {
       return this.$store.state.questContainer;
     }
   },
@@ -95,6 +115,7 @@ export default {
   },
   methods: {
     async createBlog() {
+      this.$store.commit('clearErrors')
       await this.$store.dispatch("addBlog", { blog: this.blog, tags: this.$store.state.blog.blogTags });
       this.clearFields();
     },
@@ -103,24 +124,22 @@ export default {
       this.blog.subject = ""
       this.blog.description = " "
     },
-    async deleteBoard(board) {
-      this.$store.dispatch("deleteBoard", board);
-    async question1(){
+    async question1() {
       await this.$store.dispatch("computeQuestion1", this.input)
     },
-    async question2(){
+    async question2() {
       await this.$store.dispatch("computeQuestion2")
     },
-    async question3(){
+    async question3() {
       await this.$store.dispatch("computeQuestion3", this.input)
     },
-    async question4(){
+    async question4() {
       await this.$store.dispatch("computeQuestion4")
     },
-    async question5(){
+    async question5() {
       await this.$store.dispatch("computeQuestion5")
     },
-    async question6(){
+    async question6() {
       await this.$store.dispatch("computeQuestion6")
     }
   }
@@ -145,19 +164,28 @@ label {
   color: inherit;
 }
 
-.btn{
+.btn {
   padding: 10px;
   margin: 5px;
 }
+
 .buttonContainer {
   margin-top: 20px;
 }
+
 .questionContainer {
   margin-top: 40px;
+  font-size: 25px;
 }
 
-.form-control-sm{
-  padding:5px;
+#containerCard{
+  padding: 4px;
+  border-radius: 5px;
+  background-color: lightskyblue;
+}
+
+.form-control-sm {
+  padding: 5px;
   margin: 5px;
 }
 </style>
