@@ -37,6 +37,23 @@
         <button class="btn btn-info" type="button" @click="createBlog()" :disabled="blog.subject.trim().length == 0">
           Create Blog
         </button>
+        <br />
+        <div class = "buttonContainer">
+          <button type="button" @click="question1()" :disabled="this.input.user.trim().length == 0" class="btn btn-success">Question 1</button>
+          <input type="text" class="form-control-sm" placeholder="Enter a user" v-model="this.input.user" />
+          <button type="button" @click="question2()" class="btn btn-success">Question 2</button>
+          <br />
+          <button type="button" @click="question3()" :disabled="(this.input.userX.trim().length == 0 || this.input.userY.trim().length == 0)" class="btn btn-success">Question 3</button>
+          <input type="text" class="form-control-sm" placeholder="Enter first user" v-model="this.input.userX" />
+          <input type="text" class="form-control-sm" placeholder="Enter second user" v-model="this.input.userY" />
+          <br />
+          <button type="button" @click="question4()" class="btn btn-success">Question 4</button>
+          <button type="button" @click="question5()" class="btn btn-success">Question 5</button>
+          <button type="button" @click="question6()" class="btn btn-success">Question 6</button>
+        </div>
+        <div class ="questionContainer">
+        <table><strong><tr v-for="item in container" :key="item.blogid">{{item}}</tr></strong></table>
+        </div>
       </div>
     </div>
     <br />
@@ -52,6 +69,11 @@ export default {
       blog: {
         subject: " ",
         description: " ",
+      },
+      input: {
+        user: "",
+        userX: "",
+        userY: "",
       }
     };
   },
@@ -59,6 +81,9 @@ export default {
     blogs() {
       return this.$store.state.blogs;
     },
+    container(){
+      return this.$store.state.questContainer;
+    }
   },
   mounted() {
     this.$store.dispatch("getBlogs");
@@ -80,7 +105,24 @@ export default {
     },
     async deleteBoard(board) {
       this.$store.dispatch("deleteBoard", board);
+    async question1(){
+      await this.$store.dispatch("computeQuestion1", this.input)
     },
+    async question2(){
+      await this.$store.dispatch("computeQuestion2")
+    },
+    async question3(){
+      await this.$store.dispatch("computeQuestion3", this.input)
+    },
+    async question4(){
+      await this.$store.dispatch("computeQuestion4")
+    },
+    async question5(){
+      await this.$store.dispatch("computeQuestion5")
+    },
+    async question6(){
+      await this.$store.dispatch("computeQuestion6")
+    }
   }
 };
 </script>
@@ -101,5 +143,21 @@ label {
 
 .card-link {
   color: inherit;
+}
+
+.btn{
+  padding: 10px;
+  margin: 5px;
+}
+.buttonContainer {
+  margin-top: 20px;
+}
+.questionContainer {
+  margin-top: 40px;
+}
+
+.form-control-sm{
+  padding:5px;
+  margin: 5px;
 }
 </style>
